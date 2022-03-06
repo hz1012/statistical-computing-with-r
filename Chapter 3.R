@@ -1,0 +1,107 @@
+#### 3.3 ####
+n <- 1000
+u <- runif(n)
+x <- 2/sqrt(1-u)
+hist(x, prob = TRUE ,main = expression(f(x)==8*x^(1/3)),
+     col = "skyblue",xlim = c(0,50)) #density histogram of sample
+y <- seq(2, 30, 0.01)
+lines(y, 8/(y^3),col="steelblue") #density curve f(x)
+
+#### 3.4 ####
+# 选取一系列sigma
+sigma<-c(1,2,4,8,16,32)
+for (i in 1:length(sigma)) {
+  #设置种子以保证伪随机数的一致性
+  set.seed(i)
+  # the title of histogram
+  title<-c("Histogram of Rayleigh","parameter is",sigma[i])
+  # 生成两个正态分布
+  x<-rnorm(1000,0,sigma[i])
+  y<-rnorm(1000,0,sigma[i])
+  # 生成瑞利分布的随机数
+  z<-sqrt(x^2+y^2)
+  #绘制并检查
+  hist(z,prob=TRUE,breaks = seq(0,6*sigma[i],length.out = 20)
+       ,main = title,col = "skyblue")
+  # 绘制Rayleigh 密度函数
+  x1<-seq(0,6*sigma[i],length.out = 100000)
+  y1<-(x1/sigma[i]^2)*exp(-(x1^2)/(2*sigma[i]^2))
+  lines(x1,y1,col="steelblue")
+}
+  
+#### 3.9 ####
+n <- 1000 # 随机数个数  
+y <- rbeta(n,2,2) #令Y=(X+1)/2，Y~Be(2,2),由Y产生随机数
+x <- 2*y-1 #将Y产生的随机数结果回代
+hist(x, prob = TRUE, main = expression(f(x)==(3/4)(1-x^2))) #由此得到直方图
+z <- seq(-1, 1, 0.01) #将结果进行拟合
+lines(z, (3/4)*(1-z^2))
+
+n2 <- 1000  #通过题目给出的公式定义得到相同的结果图像并进行拟合
+u <- vector(mode="numeric",length=1000)
+for (i in 1:n2) {
+  u1 <- runif(n2,-1,1)
+  u2 <- runif(n2,-1,1)
+  u3 <- runif(n2,-1,1)
+  if(abs(u3[i]) >= abs(u2[i]) && abs(u3[i]) >= abs(u1[i])){
+    u[i] <- u2[i]}
+  else
+  { u[i] <- u3[i]}
+}
+hist(u, prob = TRUE, main = expression(f(x)==(3/4)(1-x^2)))
+z <- seq(-1, 1, 0.01)
+lines(z, (3/4)*(1-z^2))
+
+#### 3.11 ####
+# 创建一个嵌套函数生成直方图
+mixturehist<-function(p1){
+set.seed(1012)
+p<-rbinom(10000,1,prob = p1)
+x1<-rnorm(10000)
+x2<-rnorm(10000,3,1)
+x<-p*x1+(1-p)*x2 #Generate  samples
+title<-paste('p1 = ',p1)
+hist(x,probability = T,main = title,col = "skyblue")
+y<-seq(-3,6,0.1)
+densityplot<-function(x){
+  p1*dnorm(x)+(1-p1)*dnorm(x,3,1)
+  }
+lines(y,densityplot(y),col='steelblue')
+}
+mixturehist(0.75)
+for (p1 in seq(0.1,0.9,0.1)){
+  mixturehist(p1)
+}
+
+#### 3.13 ####
+n <- 1000
+u <- runif(n)
+x <- (2/(1-u)^(1/4))-2 
+hist(x, prob = TRUE, main = expression(f(x)==64/(x+2)^5),col = "skyblue") # 求导得密度函数
+y <- seq(0, 20, 0.01) # 得到密度函数曲线
+lines(y, 64/(y+2)^5,col="steelblue")  
+
+#### 3.14 ####
+mu=c(0,1,2)
+Sigma=matrix(c(1,-.5,.5,-.5,1,-.5,.5,-.5,1),ncol = 3,byrow = F)
+rmvn.Choleski <-
+  function(n, mu, Sigma) {
+    # generate n random vectors from MVN(mu, Sigma)
+    # dimension is inferred from mu and Sigma
+    d <- length(mu)
+    Q <- chol(Sigma) # Choleski factorization of Sigma
+    Z <- matrix(rnorm(n*d), nrow=n, ncol=d)
+    X <- Z %*% Q + matrix(mu, n, d, byrow=TRUE)
+    X
+  }
+
+X <- rmvn.Choleski(200, mu, Sigma)
+# 绘图
+pairs(X)
+plot(X[,1:2], xlab = "x1", ylab = "x2", pch = 20)
+plot(X[,1:3], xlab = "x1", ylab = "x3", pch = 20)
+plot(X[,2:3], xlab = "x2", ylab = "x3", pch = 20)
+
+#### 3.16 ###
+library(bootstrap)# 没有就先下载
+cov(scale(scor))
