@@ -33,7 +33,7 @@ for (i in 1:length(sigma)) {
 n <- 1000 # 随机数个数  
 y <- rbeta(n,2,2) #令Y=(X+1)/2，Y~Be(2,2),由Y产生随机数
 x <- 2*y-1 #将Y产生的随机数结果回代
-hist(x, prob = TRUE, main = expression(f(x)==(3/4)(1-x^2))) #由此得到直方图
+hist(x,  prob = TRUE,main = expression(f(x)==(3/4)(1-x^2))) #由此得到直方图
 z <- seq(-1, 1, 0.01) #将结果进行拟合
 lines(z, (3/4)*(1-z^2))
 
@@ -105,3 +105,35 @@ plot(X[,2:3], xlab = "x2", ylab = "x3", pch = 20)
 #### 3.16 ###
 library(bootstrap)# 没有就先下载
 cov(scale(scor))
+
+#### 3.20 ####
+# shape：Gamma分布形状参数；scale:Gamma分布尺度参数
+lambda = 3
+shape = 5
+scale = 4
+size = 10000
+
+t = 10
+
+# 到达间隔时间随速率λ呈指数分布。
+pp.exp = function (t0) {
+  Tn = rexp(1000, lambda)
+  Sn = cumsum(Tn)
+  return(min(which(Sn > t0)) - 1)
+}
+
+# 生成服从泊松分布的N（t）
+ns = replicate(size, expr={ pp.exp(t)})
+# 生成题目描述的X(t)
+xs = sapply(ns, function (n) {
+  ys = c(rgamma(n = n, shape = shape, scale = scale))
+  sum(ys[1:n])
+})
+# 计算模拟值和理论值的差别
+# 样本
+(mean.s = mean(xs))
+(var.s = var(xs))
+
+# 理论
+(mean.t = lambda * t * shape * scale)
+(var.t = (shape + 1) * shape * scale^2*lambda*t)
