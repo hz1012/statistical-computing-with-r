@@ -13,7 +13,7 @@ sigma<-c(1,2,4,8,16,32)
 for (i in 1:length(sigma)) {
   #设置种子以保证伪随机数的一致性
   set.seed(i)
-  # the title of histogram
+  # 直方图的标题
   title<-c("Histogram of Rayleigh","parameter is",sigma[i])
   # 生成两个正态分布
   x<-rnorm(1000,0,sigma[i])
@@ -33,9 +33,10 @@ for (i in 1:length(sigma)) {
 n <- 1000 # 随机数个数  
 y <- rbeta(n,2,2) #令Y=(X+1)/2，Y~Be(2,2),由Y产生随机数
 x <- 2*y-1 #将Y产生的随机数结果回代
-hist(x,  prob = TRUE,main = expression(f(x)==(3/4)(1-x^2))) #由此得到直方图
+hist(x,  prob = TRUE,main = expression(f(x)==(3/4)(1-x^2)),ylim = c(0,0.8),
+     col = "skyblue") #由此得到直方图
 z <- seq(-1, 1, 0.01) #将结果进行拟合
-lines(z, (3/4)*(1-z^2))
+lines(z, (3/4)*(1-z^2),col="steelblue")
 
 n2 <- 1000  #通过题目给出的公式定义得到相同的结果图像并进行拟合
 u <- vector(mode="numeric",length=1000)
@@ -43,10 +44,8 @@ for (i in 1:n2) {
   u1 <- runif(n2,-1,1)
   u2 <- runif(n2,-1,1)
   u3 <- runif(n2,-1,1)
-  if(abs(u3[i]) >= abs(u2[i]) && abs(u3[i]) >= abs(u1[i])){
-    u[i] <- u2[i]}
-  else
-  { u[i] <- u3[i]}
+  ifelse(abs(u3[i]) >= abs(u2[i]) && abs(u3[i]) >= abs(u1[i]),u[i] <- u2[i],
+         u[i] <- u3[i])
 }
 hist(u, prob = TRUE, main = expression(f(x)==(3/4)(1-x^2)))
 z <- seq(-1, 1, 0.01)
