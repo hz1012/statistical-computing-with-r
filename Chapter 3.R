@@ -52,15 +52,14 @@ z <- seq(-1, 1, 0.01)
 lines(z, (3/4)*(1-z^2))
 
 #### 3.11 ####
-# 创建一个嵌套函数生成直方图
 mixturehist<-function(p1){
 set.seed(1012)
-p<-rbinom(10000,1,prob = p1)
-x1<-rnorm(10000)
-x2<-rnorm(10000,3,1)
+p<-rbinom(1000,1,prob = p1)
+x1<-rnorm(1000,3,1)
+x2<-rnorm(1000)
 x<-p*x1+(1-p)*x2 #Generate  samples
 title<-paste('p1 = ',p1)
-hist(x,probability = T,main = title,col = "skyblue")
+hist(x,probability = T,main = title,col = "skyblue",ylim=c(0,0.4))
 y<-seq(-3,6,0.1)
 densityplot<-function(x){
   p1*dnorm(x)+(1-p1)*dnorm(x,3,1)
@@ -76,7 +75,7 @@ for (p1 in seq(0.1,0.9,0.1)){
 n <- 1000
 u <- runif(n)
 x <- (2/(1-u)^(1/4))-2 
-hist(x, prob = TRUE, main = expression(f(x)==64/(x+2)^5),col = "skyblue") # 求导得密度函数
+hist(x, prob = TRUE, main = bquote(f(x)==64/(x+2)^5),col = "skyblue") # 求导得密度函数
 y <- seq(0, 20, 0.01) # 得到密度函数曲线
 lines(y, 64/(y+2)^5,col="steelblue")  
 
@@ -97,42 +96,39 @@ rmvn.Choleski <-
 X <- rmvn.Choleski(200, mu, Sigma)
 # 绘图
 pairs(X)
-plot(X[,1:2], xlab = "x1", ylab = "x2", pch = 20)
-plot(X[,1:3], xlab = "x1", ylab = "x3", pch = 20)
-plot(X[,2:3], xlab = "x2", ylab = "x3", pch = 20)
 
 #### 3.16 ###
 library(bootstrap)# 没有就先下载
-cov(scale(scor))
+cov(scale(scor[,1:2]))
+cov(scale(scor[,3:5]))
 
 #### 3.20 ####
 # shape：Gamma分布形状参数；scale:Gamma分布尺度参数
-lambda = 3
-shape = 5
-scale = 4
-size = 10000
-
-t = 10
-
-# 到达间隔时间随速率λ呈指数分布。
-pp.exp = function (t0) {
-  Tn = rexp(1000, lambda)
-  Sn = cumsum(Tn)
-  return(min(which(Sn > t0)) - 1)
+comp_poss <- function(lambda, shape, scale,size = 1000 ,t = 10) {
+  # 到达间隔时间随速率λ呈指数分布。  
+  pp.exp = function (t0) {
+    Tn = rexp(1000, lambda)
+    Sn = cumsum(Tn)
+    return(min(which(Sn > t0)) - 1)
+  }
+  
+  # 生成服从泊松分布的N（t）
+  ns = replicate(size, expr={ pp.exp(t)})
+  # 生成题目描述的X(t)
+  xs = sapply(ns, function (n) {
+    ys = c(rgamma(n = n, shape = shape, scale = scale))
+    sum(ys[1:n])
+  })
+  # 计算模拟值和理论值的差别
+  # 样本
+  mean.s = mean(xs)
+  var.s = var(xs)
+  
+  # 理论
+  mean.t = lambda * t * shape * scale
+  var.t = (shape + 1) * shape * scale^2*lambda*t
+  df = matrix(c(mean.s,mean.t,var.s,var.t),ncol = 4,
+              dimnames = list(c("value"),c("mean.s","mean.t","var.s","var.t")))
+  return(df)
 }
-
-# 生成服从泊松分布的N（t）
-ns = replicate(size, expr={ pp.exp(t)})
-# 生成题目描述的X(t)
-xs = sapply(ns, function (n) {
-  ys = c(rgamma(n = n, shape = shape, scale = scale))
-  sum(ys[1:n])
-})
-# 计算模拟值和理论值的差别
-# 样本
-(mean.s = mean(xs))
-(var.s = var(xs))
-
-# 理论
-(mean.t = lambda * t * shape * scale)
-(var.t = (shape + 1) * shape * scale^2*lambda*t)
+comp_poss(4,5,6)
