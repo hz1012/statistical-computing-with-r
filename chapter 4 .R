@@ -106,18 +106,28 @@ is.norm = function () {
 (theta2 = is.norm())
 
 #### 5-15 ####
-M <- 1e4
-k <- 5 #分成五个区间
-r <- M/k 
-N <- 50 #重复估计的次数
-T2 <- numeric(k) #储存每个区间抽样的结果
-est <- matrix(0, N, 2)
-g<-function(t)(1-exp(-1))/(1+t^2)*(t>0)*(t<1)#g(x)/f(x)=(1-exp(-1))/(1+x^2)
-for (i in 1:N) {
-  est[i, 1] <- mean(g(runif(M)))
-  for(j in 1:k)T2[j]<-mean(g(runif(r,(j-1)/k,j/k))) #分层体现在这一步
-  est[i, 2] <- mean(T2)
+M<-1e4
+N<-1000
+k<-5
+# 先利用逆变换方法生成密度函数为f_k（x）的随机数
+# 注意这里的(a,b)对应分的不同层的密度函数
+inv_fun<-function(n,a,b){  
+u<-runif(n)
+x<--log(exp(-a)-(exp(-a)-exp(-b))*u)
+x
+} 
+ 
+res3<-sapply(1:N,FUN = function(o){
+x<-inv_fun(M,0,1)
+M1<-mean((1-exp(-1))/(1+x^2)) #重要抽样
+M2<-numeric(k)
+for (j in 0:(k-1)){
+ a<-j/k
+ b<-(j+1)/k
+ xj<-inv_fun(M/k,a,b) #生成随机数
+ M2[j+1]<-mean((exp(-a)-exp(-b))/(1+xj^2)) #分层重要抽样，注意此时f/g的形式
 }
-apply(est,2,mean)#分层重要抽样法的适用范围更广
-apply(est,2,var)#example 5.10 result:6.504485e-08
-# 对比可见分层重要抽样方差减少更多
+ c(M1,sum(M2))
+})
+
+c(var(res3[1,]),var(res3[2,])) #SSE方法估计方差
