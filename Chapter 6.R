@@ -48,7 +48,8 @@ n <- 20 # X服从对数正态分布，Y=ln(x)~N(μ,σ^2)，所以可以直接利
 alpha <- .05
 m <- 1000
 cv.t<-sapply(1:m,FUN= function(o){
-  y<-rnorm(n,0,2)  
+  y<-rnorm(n)
+  c<-qt(0.975,n-1) # 0.975 quantile of t-distribution
   m<-mean(y) # estimate of mean
   se<-sqrt(var(y)) # estimate of standard error
   as.numeric((m-c*se/sqrt(n)<0)&(m+c*se/sqrt(n)>0)) # ci
@@ -57,6 +58,7 @@ level <- mean(cv.t) # mean of  Monte Carlo experiment
 
 return(data.frame(level=level))
 }
+
 exercise_6_4()
 
 #### 6-5 ####
