@@ -124,6 +124,7 @@ for(i in 1:length(n)){
 help("var.test")
 return(data.frame(power1,power2))
 }
+exercise_6_8()
 #### 6-9 ####
 exercise_6_9 <- function(distribution=c('rlnorm','uniform','Bernoulli')){
 n <- 20
