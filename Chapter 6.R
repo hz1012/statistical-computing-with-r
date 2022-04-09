@@ -89,6 +89,7 @@ exercise_6_5(1012)
 # 我们可以看到结果远小于0.95，因此t-区间更稳健
 
 #### 6-8 ####
+exercise_6_8 <- function(){
 count5test <- function(x,y){
   X <- x - mean(x)
   Y <- y - mean(y)
@@ -121,9 +122,8 @@ for(i in 1:length(n)){
   power2[i] <- mean(pvalues<=0.055)
 }
 help("var.test")
-power1
-power2
-
+return(data.frame(power1,power2))
+}
 #### 6-9 ####
 exercise_6_9 <- function(distribution=c('rlnorm','uniform','Bernoulli')){
 n <- 20
@@ -141,7 +141,6 @@ ginifun <- function()
   }
   gini=sum/(n^2*m)
 }
-gini1 <- ginifun()
 res <- replicate(size,expr = ginifun())
 hist(as.numeric(res), prob = TRUE, main = distribution)
 return(data.frame(mean = mean(res),median = median(res),quantile = quantile(res,seq(.1,.9,.1))))
@@ -186,8 +185,8 @@ return(er)
 exercise_6_A(1012)
 
 #### 6_B ####
-exercise_6_B <- function(){
-set.seed(123)
+exercise_6_B <- function(seed){
+seed <- set.seed(123)
 x <- rnorm(20,2,10)
 sigma <- rnorm(20,5,50)
 y <- 3*x+sigma
