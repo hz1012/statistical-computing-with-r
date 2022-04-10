@@ -38,8 +38,7 @@ ggplot(data, aes(x=mean, y=power,col=n,linetype=n)) +
   geom_vline(xintercept=500, lty=2) +
   geom_hline(yintercept=c(0,.05), lty=1:2) +
   theme_light() # 主题可以自己改我喜欢用这个
- # 利用ggplot2的颜色和形状映射概念自动生成图例(没学过ggplot2包的可以看看R数据科学)
-help("geom_line")
+# 利用ggplot2的颜色和形状映射概念自动生成图例(没学过ggplot2包的可以看看R数据科学)
 
 #### 6-4 ####
 exercise_6_4 <- function(seed=123){
@@ -49,8 +48,8 @@ alpha <- .05
 m <- 1000
 cv.t<-sapply(1:m,FUN= function(o){
   y<-rnorm(n)
-  c<-qt(0.975,n-1) # 0.975 quantile of t-distribution
-  m<-mean(y) # estimate of mean
+  c<-qt(0.975,n-1) # t分布0.975分位数
+  m<-mean(y) # 均值估计
   se<-sqrt(var(y)) # estimate of standard error
   as.numeric((m-c*se/sqrt(n)<0)&(m+c*se/sqrt(n)>0)) # ci
 })
@@ -118,12 +117,11 @@ for(i in 1:length(n)){
     x <- rnorm(n[i],mu1,sigma1)
     y <- rnorm(n[i],mu2,sigma2)
     Ftest <- var.test(x, y, ratio = 1,
-                      alternative = c("two.sided", "less", "greater"),
+                      alternative = c("two.sided"),
                       conf.level = 0.945, ...)
     Ftest$p.value})
   power2[i] <- mean(pvalues<=0.055)
 }
-help("var.test")
 return(data.frame(power1,power2))
 }
 exercise_6_8()
@@ -145,7 +143,8 @@ ginifun <- function()
   gini=sum/(n^2*m)
 }
 res <- replicate(size,expr = ginifun())
-hist(as.numeric(res), prob = TRUE, main = distribution)
+hist(as.numeric(res), prob = TRUE, main = distribution,xlab='gini',col='skyblue')
+help(hist)
 return(data.frame(mean = mean(res),median = median(res),quantile = quantile(res,seq(.1,.9,.1))))
 }
 exercise_6_9(distribution = 'rlnorm')
@@ -194,9 +193,10 @@ x <- rnorm(20,2,10)
 sigma <- rnorm(20,5,50)
 y <- 3*x+sigma
 cor(x,y)
-cor.test(x,y)
-cor.test(x,y,method = 'kendall')
-cor.test(x,y,method = 'spearman')
+pearson <- cor.test(x,y)
+kendall <- cor.test(x,y,method = 'kendall')
+spearman <- cor.test(x,y,method = 'spearman')
 data.frame(x,y)
+return(list(pearson=pearson,kendall=kendall,spearman=spearman))
 }
 exercise_6_B()
