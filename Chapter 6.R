@@ -33,13 +33,13 @@ for (n in seq(20,50,10)) {
 
 library(ggplot2)
 
-ggplot(data, aes(x=mean, y=power,col=n)) +
+ggplot(data, aes(x=mean, y=power,col=n,linetype=n)) +
   geom_line() +
   geom_vline(xintercept=500, lty=2) +
   geom_hline(yintercept=c(0,.05), lty=1:2) +
   theme_light() # 主题可以自己改我喜欢用这个
- # 利用ggplot2的颜色映射概念自动生成图例(没学过ggplot2包的可以看看R数据科学)
-
+ # 利用ggplot2的颜色和形状映射概念自动生成图例(没学过ggplot2包的可以看看R数据科学)
+help("geom_line")
 
 #### 6-4 ####
 exercise_6_4 <- function(seed=123){
