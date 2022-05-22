@@ -86,7 +86,7 @@ n <- 300
 m <- 200
 r <- 80
 theta <- 1/3
-t <- 1.5 # t的生成要根据r/m和theta决定的分位数函数
+t <- 1.5 # t的生成要根据r，m和theta决定的分位数函数
 y <- rexp(n,theta)
 theta0 <- 1
 for (j in 1:3000) {
